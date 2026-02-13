@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest flake8
+
+      - name: Lint with Flake8
+        run: flake8 src/
+
+      - name: Run Pytest
+        run: pytest tests/
+
+      - name: Generate Mystery Box Artifact
+        run: |
+          echo "WeatherPy Inc. - System Diagnostics Report" > mystery_box.txt
+          echo "Date: $(date)" >> mystery_box.txt
+          echo "Status: Happiness is mandatory." >> mystery_box.txt
+
+      - name: Upload Mystery Box Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mystery-box
+          path: mystery_box.txt
